@@ -21,12 +21,10 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import type { FormEvent, MouseEvent as ReactMouseEvent } from "react";
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { business, cataloguePages, projects, projectCategories, services, type ProjectCategory } from "./data";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const HeroScene = lazy(() => import("./components/HeroScene"));
 
 const navigation = [
   { label: "Home", href: "#home", id: "home" },
@@ -44,7 +42,7 @@ type GalleryImage = {
 };
 
 const projectImages: GalleryImage[] = projects.map((project) => ({
-  src: `/images/projects/${String(project.page).padStart(2, "0")}.webp`,
+  src: project.imageSrc ?? `/images/projects/${String(project.page).padStart(2, "0")}.webp`,
   title: project.title,
   alt: project.imageAlt,
 }));
@@ -61,40 +59,20 @@ type ActiveGallery =
 
 function Logo({ footer = false }: { footer?: boolean }) {
   return (
-    <a className={`brand-lockup${footer ? " brand-lockup--footer" : ""}`} href="#home" aria-label="MK Balaji Enterprises home">
-      <span className="brand-seal">
-        <img src="/images/brand/mk-crown.webp" alt="" width="42" height="46" />
-      </span>
+    <a className={`brand-lockup${footer ? " brand-lockup--footer" : ""}`} href="#home" aria-label="MK Balaji Interiors home">
+      <img
+        className="brand-logo-image"
+        src="/assets/mk-balaji-interiors-logo.jpg"
+        alt="Official MK Balaji Interiors logo"
+        width="768"
+        height="768"
+      />
       <span className="brand-copy">
-        <span className="brand-name">Balaji Enterprises</span>
-        <span className="brand-subtitle">INTERIOR <i /> POLYGRANITE</span>
+        <span className="brand-name">MK Balaji Interiors</span>
+        <span className="brand-tagline">INTERIOR <i aria-hidden="true">•</i> POLYGRANITE</span>
       </span>
     </a>
   );
-}
-
-function useWideScreenScene(reducedMotion: boolean | null) {
-  const [enabled, setEnabled] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 900px)");
-    const update = () => {
-      if (!media.matches || reducedMotion) {
-        setEnabled(false);
-        return;
-      }
-
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("webgl2") || canvas.getContext("webgl");
-      if (context) context.getExtension("WEBGL_lose_context")?.loseContext();
-      setEnabled(Boolean(context));
-    };
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, [reducedMotion]);
-
-  return enabled;
 }
 
 function Navbar() {
@@ -195,14 +173,13 @@ function Navbar() {
   );
 }
 
-function Hero({ showScene }: { showScene: boolean }) {
+function Hero() {
   return (
     <section className="hero" id="home">
       <div className="hero-photo" aria-hidden="true">
-        <img src="/images/projects/19.webp" alt="" fetchPriority="high" />
+        <img src="/assets/hero-living-room.png" alt="" fetchPriority="high" />
       </div>
       <div className="hero-shade" aria-hidden="true" />
-      {showScene && <Suspense fallback={null}><HeroScene /></Suspense>}
       <div className="hero-content page-width">
         <motion.div
           className="hero-copy"
@@ -214,7 +191,7 @@ function Hero({ showScene }: { showScene: boolean }) {
           }}
         >
           <motion.p
-            className="eyebrow eyebrow--lime"
+            className="eyebrow eyebrow--accent"
             variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           >
@@ -237,7 +214,7 @@ function Hero({ showScene }: { showScene: boolean }) {
             variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
             transition={{ duration: 0.7 }}
           >
-            <a className="button button--lime" href="#contact">
+            <a className="button button--accent" href="#contact">
               Get a free quote <ArrowRight size={18} aria-hidden="true" />
             </a>
             <a className="button button--outline-light" href={`tel:${business.phones[0].replaceAll(" ", "")}`}>
@@ -380,8 +357,8 @@ function FeaturedProduct() {
           <li><Check size={17} /> See the supplied catalogue for more designs</li>
         </ul>
         <div className="featured-actions">
-          <a className="button button--blue" href="#products">Browse the catalogue <ArrowRight size={17} /></a>
-          <a className="button button--outline-blue" href="#contact">Request a price</a>
+          <a className="button button--burgundy" href="#products">Browse the catalogue <ArrowRight size={17} /></a>
+          <a className="button button--outline-burgundy" href="#contact">Request a price</a>
         </div>
         <img className="polygranite-mark" src="/images/brand/polygranite-logo.webp" alt="Polygranite Sheet logo" loading="lazy" />
       </div>
@@ -409,7 +386,7 @@ function ProductCatalogue({ onOpen }: { onOpen: (index: number) => void }) {
             description="Browse the supplied Polygranite catalogue and see each design sheet up close."
           />
           <a
-            className="button button--outline-blue catalogue-download"
+            className="button button--outline-burgundy catalogue-download"
             href="/downloads/polygranite-catalogue.pdf"
             target="_blank"
             rel="noreferrer"
@@ -446,9 +423,9 @@ function ProductCatalogue({ onOpen }: { onOpen: (index: number) => void }) {
 }
 
 function Projects({ onOpen }: { onOpen: (index: number) => void }) {
-  const [category, setCategory] = useState<"All work" | ProjectCategory>("All work");
+  const [category, setCategory] = useState<"All Projects" | ProjectCategory>("All Projects");
   const visibleProjects = useMemo(
-    () => projects.map((project, index) => ({ ...project, index })).filter((project) => category === "All work" || project.category === category),
+    () => projects.map((project, index) => ({ ...project, index })).filter((project) => category === "All Projects" || project.category === category),
     [category],
   );
 
@@ -458,10 +435,10 @@ function Projects({ onOpen }: { onOpen: (index: number) => void }) {
         <div className="portfolio-heading">
           <SectionHeading
             label="Completed projects"
-            title="Recent projects we're proud of."
-            description="A selection of interior work from the supplied completed-projects collection."
+            title="Crafted spaces. Beautifully completed."
+            description="Explore completed interior projects by room, furniture and finish."
           />
-          <a className="text-link portfolio-download" href="/downloads/completed-work.pdf" target="_blank" rel="noreferrer">
+          <a className="text-link portfolio-download" href="/downloads/completed-project-work.pdf" target="_blank" rel="noreferrer">
             Open project collection <ArrowUpRight size={17} />
           </a>
         </div>
@@ -494,7 +471,7 @@ function Projects({ onOpen }: { onOpen: (index: number) => void }) {
               >
                 <span className="project-image">
                   <img
-                    src={`/images/projects/${String(project.page).padStart(2, "0")}.webp`}
+                    src={projectImages[project.index].src}
                     alt={project.imageAlt}
                     loading="lazy"
                     decoding="async"
@@ -503,7 +480,7 @@ function Projects({ onOpen }: { onOpen: (index: number) => void }) {
                 </span>
                 <span className="project-meta">
                   <span><small>{project.category}</small><strong>{project.title}</strong></span>
-                  <span className="project-index">0{project.index + 1}</span>
+                  <span className="project-index">{String(project.index + 1).padStart(2, "0")}</span>
                 </span>
               </motion.button>
             ))}
@@ -511,7 +488,7 @@ function Projects({ onOpen }: { onOpen: (index: number) => void }) {
         </motion.div>
         <div className="project-collection">
           <span><span className="collection-dot" /> More work in the completed-projects PDF</span>
-          <a href="/downloads/completed-work.pdf" target="_blank" rel="noreferrer">View all projects <ArrowRight size={16} /></a>
+          <a href="/downloads/completed-project-work.pdf" target="_blank" rel="noreferrer">View all projects <ArrowRight size={16} /></a>
         </div>
       </div>
     </section>
@@ -538,7 +515,7 @@ function WhyChooseUs() {
             title="Good work starts with listening."
             description="Interior choices should work beautifully and make sense for the people who use the space."
           />
-          <a className="button button--lime" href="#contact">Let's talk about your space <ArrowRight size={17} /></a>
+          <a className="button button--accent" href="#contact">Let's talk about your space <ArrowRight size={17} /></a>
         </div>
         <div className="reasons-grid">
           {reasons.map((reason, index) => {
@@ -564,12 +541,12 @@ function Contact({ onSubmit }: { onSubmit: (event: FormEvent<HTMLFormElement>) =
       <div className="page-width">
         <div className="contact-banner" data-reveal>
           <div className="contact-banner-copy">
-            <p className="eyebrow eyebrow--lime"><span className="eyebrow-line" />Your space, your ideas</p>
+            <p className="eyebrow eyebrow--accent"><span className="eyebrow-line" />Your space, your ideas</p>
             <h2>Get a free consultation <em>today.</em></h2>
             <p>Tell us about your space. We'll visit, understand the work and share a clear quote — with no obligation.</p>
             <div className="contact-banner-actions">
               <a
-                className="button button--lime"
+                className="button button--accent"
                 href={`https://wa.me/918484035027?text=${encodeURIComponent("Hello, I would like to enquire about interior work.")}`}
                 target="_blank"
                 rel="noreferrer"
@@ -632,7 +609,7 @@ function Contact({ onSubmit }: { onSubmit: (event: FormEvent<HTMLFormElement>) =
                 <ChevronDown size={16} />
               </span>
             </label>
-            <button className="button button--blue form-submit" type="submit">Send an enquiry <ArrowRight size={17} /></button>
+            <button className="button button--burgundy form-submit" type="submit">Send an enquiry <ArrowRight size={17} /></button>
             <p className="form-note">Your email app will open with your enquiry ready to send.</p>
           </form>
         </div>
@@ -741,7 +718,6 @@ function Lightbox({
 
 export default function App() {
   const reducedMotion = useReducedMotion();
-  const showScene = useWideScreenScene(reducedMotion);
   const [activeGallery, setActiveGallery] = useState<ActiveGallery | null>(null);
 
   useEffect(() => {
@@ -755,6 +731,14 @@ export default function App() {
     gsap.ticker.lagSmoothing(0);
 
     const context = gsap.context(() => {
+      if (window.matchMedia("(min-width: 981px)").matches) {
+        gsap.to(".hero-photo", {
+          yPercent: 4,
+          ease: "none",
+          scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true },
+        });
+      }
+
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((element) => {
         gsap.fromTo(
           element,
@@ -802,7 +786,7 @@ export default function App() {
       <a className="skip-link" href="#main">Skip to content</a>
       <Navbar />
       <main id="main">
-        <Hero showScene={showScene} />
+        <Hero />
         <About />
         <Services />
         <FeaturedProduct />

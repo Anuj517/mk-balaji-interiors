@@ -25,7 +25,7 @@ function BrandScene() {
       </mesh>
       <mesh position={[-1.42, -0.55, -0.62]} rotation={[0, 0.28, 0.1]}>
         <boxGeometry args={[0.13, 3.8, 0.17]} />
-        <meshStandardMaterial color="#AFCB1F" roughness={0.7} />
+        <meshStandardMaterial color="#B7A89A" roughness={0.7} />
       </mesh>
       <mesh position={[1.58, 0.84, -0.58]} rotation={[0, -0.18, -0.12]}>
         <boxGeometry args={[0.82, 0.09, 0.32]} />
@@ -33,7 +33,7 @@ function BrandScene() {
       </mesh>
       <mesh position={[1.6, -0.87, -0.58]} rotation={[0, -0.18, 0.12]}>
         <boxGeometry args={[0.62, 0.09, 0.32]} />
-        <meshStandardMaterial color="#264796" roughness={0.62} />
+        <meshStandardMaterial color="#722F37" roughness={0.62} />
       </mesh>
     </group>
   );

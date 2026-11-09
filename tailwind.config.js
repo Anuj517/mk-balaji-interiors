@@ -5,9 +5,10 @@ export default {
     extend: {
       colors: {
         brand: {
-          blue: "#264796",
-          lime: "#AFCB1F",
-          ink: "#10254b",
+          burgundy: "#722F37",
+          latte: "#B7A89A",
+          cream: "#E8DCC6",
+          white: "#FFFFFF",
         },
       },
       fontFamily: {

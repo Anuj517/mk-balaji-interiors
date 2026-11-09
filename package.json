@@ -7,7 +7,8 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "typecheck": "tsc -b --pretty"
+    "typecheck": "tsc -b --pretty",
+    "extract:projects": "node scripts/render-project-pdf.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "^9.4.0",
@@ -20,12 +21,15 @@
     "three": "^0.181.2"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.1.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@types/three": "^0.181.0",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.22",
+    "pdfjs-dist": "^6.5.438",
     "postcss": "^8.5.6",
+    "sharp": "^0.35.5",
     "tailwindcss": "^3.4.18",
     "typescript": "~5.9.3",
     "vite": "^7.1.12"
